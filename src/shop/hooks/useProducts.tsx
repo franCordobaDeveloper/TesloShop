@@ -41,7 +41,6 @@ export const useProducts = () => {
             break;
     }
 
-
     return useQuery({
         queryKey: ['products', { offset, limit, gender, sizes, minPrice, maxPrice, query }],
         queryFn: () => getProductsAction({

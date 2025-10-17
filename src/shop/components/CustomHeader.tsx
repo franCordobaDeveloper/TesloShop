@@ -1,37 +1,23 @@
-import { useRef, type KeyboardEvent } from "react";
+
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link, useParams, useSearchParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { cn } from "@/lib/utils";
 import { CustomLogo } from "@/components/custom/CustomLogo";
+import { useAuthStore } from "@/auth/store/auth.store";
+import { useSearch } from "@/hooks/useSearch";
 
 
 export const CustomHeader = () => {
 
+    const { inputRef, query, handleSearch } = useSearch();
 
-
-    const [searchParams, setSearchParams] = useSearchParams();
+    const { authStatus, isAdmin, logout } = useAuthStore();
 
     const { gender } = useParams();
 
-    const inputRef = useRef<HTMLInputElement>(null);
-    const query = searchParams.get('query') || '';
 
-    const handleSearch = (event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.key !== 'Enter') return;
-
-        const newSearchParams = new URLSearchParams();
-        const query = inputRef.current?.value;
-
-        if (!query) {
-            newSearchParams.delete('query');
-        } else {
-            newSearchParams.set('query', inputRef.current!.value);
-        }
-
-        setSearchParams(newSearchParams);
-    }
 
     return <header className="sticky top-0 z-50 w-full border-b backdrop-blur bg-slate-50">
         <div className="container mx-auto px-4 lg:px-8">
@@ -86,25 +72,42 @@ export const CustomHeader = () => {
                         <Search className="h-5 w-5" />
                     </Button>
 
-                    <Link to='/auth/login'>
-                        <Button
-                            variant='default'
-                            size='sm'
-                            className="ml-2"
-                        >
-                            Login
-                        </Button>
-                    </Link>
+                    {
+                        authStatus === 'not-authenticated' ? (
+                            <Link to='/auth/login'>
+                                <Button
+                                    variant='default'
+                                    size='sm'
+                                    className="ml-2"
+                                >
+                                    Login
+                                </Button>
+                            </Link>
+                        ) : (
+                            <Button
+                                variant='outline'
+                                size='sm'
+                                className="ml-2"
+                                onClick={logout}
+                            >
+                                Cerrar Sesión
+                            </Button>
+                        )
+                    }
 
-                    <Link to='/admin'>
-                        <Button
-                            variant='destructive'
-                            size='sm'
-                            className="ml-2"
-                        >
-                            Admin
-                        </Button>
-                    </Link>
+                    {
+                        isAdmin() && (
+                            <Link to='/admin'>
+                                <Button
+                                    variant='destructive'
+                                    size='sm'
+                                    className="ml-2"
+                                >
+                                    Admin
+                                </Button>
+                            </Link>
+                        )
+                    }
 
                 </div>
             </div>
