@@ -7,6 +7,7 @@ import { Toaster } from 'sonner';
 import type { PropsWithChildren } from "react";
 import { CustomFullScreenLoading } from "./components/custom/CustomFullScreenLoading";
 import { useAuthStore } from "./auth/store/auth.store";
+
 const queryClient = new QueryClient();
 
 const CheckAuthProvider = ({ children }: PropsWithChildren) => {
@@ -15,9 +16,13 @@ const CheckAuthProvider = ({ children }: PropsWithChildren) => {
 
     const { isLoading } = useQuery({
         queryKey: ['auth'],
-        queryFn: checkAuthStatus,
+        queryFn: async () => {
+            await checkAuthStatus();
+            // Agrega delay aquí
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        },
         retry: false,
-        staleTime: 1000 * 60 * 1.5,
+        refetchInterval: false, // Desactiva refetch automático
         refetchOnWindowFocus: false,
     });
 
@@ -33,7 +38,6 @@ export const TesloShopApp = () => {
             <CheckAuthProvider>
                 <RouterProvider router={appRouter} />
             </CheckAuthProvider>
-            {/* The rest of your application */}
             <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
     );
