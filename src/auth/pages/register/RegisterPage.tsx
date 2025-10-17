@@ -13,7 +13,7 @@ export const RegisterPage = () => {
 
     const navigate = useNavigate();
 
-    const { register } = useAuthStore();
+    const {  register } = useAuthStore();
 
     const [isPosting, setIsPosting] = useState(false);
 
